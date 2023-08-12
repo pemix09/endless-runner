@@ -52,6 +52,14 @@ class MainMenuScreen extends StatelessWidget {
               child: const Text('Play'),
             ),
             _gap,
+            FilledButton(
+              onPressed: () {
+                audioController.playSfx(SfxType.buttonTap);
+                GoRouter.of(context).go('/play-endless-runner');
+              },
+              child: const Text('Play Endless Runner'),
+            ),
+            _gap,
             if (gamesServicesController != null) ...[
               _hideUntilReady(
                 ready: gamesServicesController.signedIn,

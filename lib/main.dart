@@ -7,6 +7,10 @@
 // import 'package:firebase_core/firebase_core.dart';
 // import 'firebase_options.dart';
 
+import 'package:endless_runner/src/runner_game_session/local_storage_game_persistence.dart';
+import 'package:endless_runner/src/runner_game_session/runner_game_controller.dart';
+import 'package:endless_runner/src/runner_game_session/runner_game_persistence.dart';
+import 'package:endless_runner/src/runner_game_session/runner_game_screen.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -99,6 +103,10 @@ void guardedMain() {
   //   inAppPurchaseController.restorePurchases();
   // }
 
+  var runnerGamePersistence = LocalStorageGamePersistence();
+  RunnerGameController? runnerGameController =
+      RunnerGameController(persistence: runnerGamePersistence);
+
   runApp(
     MyApp(
       settingsPersistence: LocalStorageSettingsPersistence(),
@@ -106,6 +114,7 @@ void guardedMain() {
       inAppPurchaseController: inAppPurchaseController,
       adsController: adsController,
       gamesServicesController: gamesServicesController,
+      runnerGameController: runnerGameController,
     ),
   );
 }
@@ -120,6 +129,14 @@ class MyApp extends StatelessWidget {
           builder: (context, state) =>
               const MainMenuScreen(key: Key('main menu')),
           routes: [
+            GoRoute(
+              path: 'play-endless-runner',
+              pageBuilder: (context, state) => buildMyTransition<void>(
+                key: ValueKey('play-endless-runner'),
+                child: const RunnerGameScreen(),
+                color: context.watch<Palette>().backgroundLevelSelection,
+              ),
+            ),
             GoRoute(
                 path: 'play',
                 pageBuilder: (context, state) => buildMyTransition<void>(
@@ -193,12 +210,15 @@ class MyApp extends StatelessWidget {
 
   final AdsController? adsController;
 
+  final RunnerGameController runnerGameController;
+
   const MyApp({
     required this.playerProgressPersistence,
     required this.settingsPersistence,
     required this.inAppPurchaseController,
     required this.adsController,
     required this.gamesServicesController,
+    required this.runnerGameController,
     super.key,
   });
 
@@ -224,6 +244,10 @@ class MyApp extends StatelessWidget {
             create: (context) => SettingsController(
               persistence: settingsPersistence,
             )..loadStateFromPersistence(),
+          ),
+          Provider<RunnerGameController>(
+            lazy: false,
+            create: (context) => runnerGameController,
           ),
           ProxyProvider2<SettingsController, ValueNotifier<AppLifecycleState>,
               AudioController>(
