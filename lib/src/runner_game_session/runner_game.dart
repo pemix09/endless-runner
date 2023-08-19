@@ -33,10 +33,12 @@ class RunnerGame extends FlameGame {
       size: size,
     );
 
-    add(_dino);
-  
     var background = await createParallaxBackground();
     add(background);
+
+    _dino.x = 100;
+    _dino.y = 100;
+    add(_dino);
   }
 
   Future<SpriteAnimation> createDinoIdleAnimation() async {
@@ -64,8 +66,8 @@ class RunnerGame extends FlameGame {
       [1, 2, 3, 4, 5, 6].map(
         (i) => ParallaxImageData('parallax/plx-$i.png'),
       ),
-      baseVelocity: Vector2.all(10),
-      
+      baseVelocity: Vector2(20, 0),
+      velocityMultiplierDelta: Vector2(1.8, 1.0),
     );
 
     return parallax;
