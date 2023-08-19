@@ -8,7 +8,7 @@
 // import 'firebase_options.dart';
 
 import 'package:endless_runner/src/runner_game_session/local_storage_game_persistence.dart';
-import 'package:endless_runner/src/runner_game_session/runner_game_controller.dart';
+import 'package:endless_runner/src/runner_game_session/runner_game.dart';
 import 'package:endless_runner/src/runner_game_session/runner_game_persistence.dart';
 import 'package:endless_runner/src/runner_game_session/runner_game_screen.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -104,8 +104,7 @@ void guardedMain() {
   // }
 
   var runnerGamePersistence = LocalStorageGamePersistence();
-  RunnerGameController? runnerGameController =
-      RunnerGameController(persistence: runnerGamePersistence);
+  RunnerGame? runnerGame = RunnerGame(persistence: runnerGamePersistence);
 
   runApp(
     MyApp(
@@ -114,7 +113,7 @@ void guardedMain() {
       inAppPurchaseController: inAppPurchaseController,
       adsController: adsController,
       gamesServicesController: gamesServicesController,
-      runnerGameController: runnerGameController,
+      runnerGameController: runnerGame,
     ),
   );
 }
@@ -133,7 +132,7 @@ class MyApp extends StatelessWidget {
               path: 'play-endless-runner',
               pageBuilder: (context, state) => buildMyTransition<void>(
                 key: ValueKey('play-endless-runner'),
-                child: const RunnerGameScreen(),
+                child: RunnerGameScreen(),
                 color: context.watch<Palette>().backgroundLevelSelection,
               ),
             ),
@@ -210,7 +209,7 @@ class MyApp extends StatelessWidget {
 
   final AdsController? adsController;
 
-  final RunnerGameController runnerGameController;
+  final RunnerGame runnerGameController;
 
   const MyApp({
     required this.playerProgressPersistence,
@@ -245,7 +244,7 @@ class MyApp extends StatelessWidget {
               persistence: settingsPersistence,
             )..loadStateFromPersistence(),
           ),
-          Provider<RunnerGameController>(
+          Provider<RunnerGame>(
             lazy: false,
             create: (context) => runnerGameController,
           ),
