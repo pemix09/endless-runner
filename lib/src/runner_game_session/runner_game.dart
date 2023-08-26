@@ -9,10 +9,14 @@ import 'package:flame/sprite.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
+const double groundHeight = 32;
+const double dinoTopBottomSpacing = 10;
+const int numberOfTilesAlongWidth = 10;
+
 class RunnerGame extends FlameGame {
   final log = Logger("RunnerGameController");
   late final RunnerGamePersistence _persistence;
-  late final SpriteAnimationComponent _dino;
+  SpriteAnimationComponent? _dino;
   late final ParallaxComponent _parallaxBackground;
 
   ValueNotifier<int> distance = ValueNotifier(0);
@@ -35,10 +39,23 @@ class RunnerGame extends FlameGame {
 
     var background = await createParallaxBackground();
     add(background);
+    add(_dino!);
+  }
 
-    _dino.x = 100;
-    _dino.y = 100;
-    add(_dino);
+  @override
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+
+    //TODO - somthing wrong with this method!!!
+    var gameSize = size.toSize();
+
+    debugPrint(size.toString());
+
+    if (_dino != null) {
+      _dino!.height = _dino!.width = gameSize.width / numberOfTilesAlongWidth;
+      _dino!.x = _dino!.width;
+      _dino!.y = gameSize.height - groundHeight + dinoTopBottomSpacing;
+    }
   }
 
   Future<SpriteAnimation> createDinoIdleAnimation() async {
